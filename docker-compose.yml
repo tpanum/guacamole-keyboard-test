@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  db:
+    hostname: db
+    build: ./mysql/
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - ./_data/mysql:/var/lib/mysql
+
+  guacd:
+    hostname: guacd
+    image: guacamole/guacd:0.9.14
+    restart: always
+
+  guacamole:
+    build: ./guacamole/
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      GUACD_HOSTNAME: guacd
+      MYSQL_HOSTNAME: db
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
+  ubuntuvnc:
+    hostname: ubuntuvnc
+    image: consol/ubuntu-xfce-vnc
